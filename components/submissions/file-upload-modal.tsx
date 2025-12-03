@@ -63,7 +63,8 @@ export function FileUploadModal({
     }
 
     return null;
-  }, [maxFileSize, acceptedFileTypes]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleFiles = useCallback((fileList: FileList | null) => {
     if (!fileList) return;

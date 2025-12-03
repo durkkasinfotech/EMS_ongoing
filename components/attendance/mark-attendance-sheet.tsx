@@ -30,6 +30,17 @@ interface VerificationStatus {
   device: boolean;
 }
 
+// Expected location (institution coordinates - should be from backend)
+const EXPECTED_LOCATION = {
+  lat: 12.9716, // Example: Bangalore coordinates
+  lng: 77.5946,
+  radius: 100, // 100 meters radius
+};
+
+// Allowed time window (9:00 AM - 10:00 AM)
+const ALLOWED_TIME_START = 9; // 9 AM
+const ALLOWED_TIME_END = 10; // 10 AM
+
 export function MarkAttendanceSheet({ isOpen, onClose, onSuccess }: MarkAttendanceSheetProps) {
   const [step, setStep] = useState<"qr" | "location" | "photo" | "confirm">("qr");
   const [qrData, setQrData] = useState<string | null>(null);
@@ -46,17 +57,6 @@ export function MarkAttendanceSheet({ isOpen, onClose, onSuccess }: MarkAttendan
   });
   const [timeValid, setTimeValid] = useState(false);
   const [timeError, setTimeError] = useState<string | null>(null);
-
-  // Expected location (institution coordinates - should be from backend)
-  const EXPECTED_LOCATION = {
-    lat: 12.9716, // Example: Bangalore coordinates
-    lng: 77.5946,
-    radius: 100, // 100 meters radius
-  };
-
-  // Allowed time window (9:00 AM - 10:00 AM)
-  const ALLOWED_TIME_START = 9; // 9 AM
-  const ALLOWED_TIME_END = 10; // 10 AM
 
   useEffect(() => {
     if (isOpen) {

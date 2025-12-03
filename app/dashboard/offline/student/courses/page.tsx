@@ -288,11 +288,17 @@ export default function OfflineCoursesPage() {
     
     if (downloaded) {
       // View downloaded content
-      const content = formatDocumentForDisplay({
+      const parsedDoc: ParsedDocument = {
         title: downloaded.subtopicTitle,
         content: downloaded.content,
-        type: "text",
-      });
+        metadata: {
+          type: "text",
+          size: downloaded.content.length,
+          uploadedAt: new Date().toISOString(),
+        },
+        sections: [],
+      };
+      const content = formatDocumentForDisplay(parsedDoc);
       
       setSelectedContent({
         title: downloaded.subtopicTitle,
@@ -302,11 +308,18 @@ export default function OfflineCoursesPage() {
       setIsContentViewerOpen(true);
     } else {
       // Generate preview content for viewing (even if not downloaded)
-      const previewContent = formatDocumentForDisplay({
+      const previewText = `This is a preview of ${file ? file.name : subtopic.title}. Practice material content for offline learning.\n\n${subtopic.title} contains practice exercises and materials to help you master the concepts.`;
+      const previewDoc: ParsedDocument = {
         title: file ? `${subtopic.title} - ${file.name}` : subtopic.title,
-        content: `This is a preview of ${file ? file.name : subtopic.title}. Practice material content for offline learning.\n\n${subtopic.title} contains practice exercises and materials to help you master the concepts.`,
-        type: "text",
-      });
+        content: previewText,
+        metadata: {
+          type: "text",
+          size: previewText.length,
+          uploadedAt: new Date().toISOString(),
+        },
+        sections: [],
+      };
+      const previewContent = formatDocumentForDisplay(previewDoc);
       
       setSelectedContent({
         title: file ? `${subtopic.title} - ${file.name}` : subtopic.title,
