@@ -21,18 +21,6 @@ export function QRScanner({ isOpen, onClose, onScanSuccess, onError }: QRScanner
   const [error, setError] = useState<string | null>(null);
   const [permissionGranted, setPermissionGranted] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      startCamera();
-    } else {
-      stopCamera();
-    }
-
-    return () => {
-      stopCamera();
-    };
-  }, [isOpen, startCamera]);
-
   const startCamera = useCallback(async () => {
     try {
       setError(null);
@@ -82,6 +70,18 @@ export function QRScanner({ isOpen, onClose, onScanSuccess, onError }: QRScanner
     const mockQRData = `ATTENDANCE_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     onScanSuccess(mockQRData);
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+
+    return () => {
+      stopCamera();
+    };
+  }, [isOpen, startCamera]);
 
   if (!isOpen) return null;
 

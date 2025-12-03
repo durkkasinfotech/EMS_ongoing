@@ -58,15 +58,6 @@ export function MarkAttendanceSheet({ isOpen, onClose, onSuccess }: MarkAttendan
   const [timeValid, setTimeValid] = useState(false);
   const [timeError, setTimeError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      checkTimeValidity();
-      getLocation();
-    } else {
-      resetForm();
-    }
-  }, [isOpen, getLocation]);
-
   const resetForm = () => {
     setStep("qr");
     setQrData(null);
@@ -257,6 +248,15 @@ export function MarkAttendanceSheet({ isOpen, onClose, onSuccess }: MarkAttendan
   };
 
   const allVerified = Object.values(verification).every((v) => v === true) && timeValid;
+
+  useEffect(() => {
+    if (isOpen) {
+      checkTimeValidity();
+      getLocation();
+    } else {
+      resetForm();
+    }
+  }, [isOpen, getLocation]);
 
   if (!isOpen) return null;
 

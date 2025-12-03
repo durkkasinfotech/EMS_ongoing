@@ -50,6 +50,7 @@ export function FileUploadModal({
     return FileText;
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const validateFile = useCallback((file: File): string | null => {
     // Check file size
     if (file.size > maxFileSize * 1024 * 1024) {
@@ -63,7 +64,6 @@ export function FileUploadModal({
     }
 
     return null;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleFiles = useCallback((fileList: FileList | null) => {

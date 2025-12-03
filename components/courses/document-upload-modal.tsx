@@ -279,7 +279,7 @@ export function DocumentUploadModal({
                       )}
                       {block.type === "list" && block.items && (
                         <ul className="list-disc list-inside ml-4 mb-2">
-                          {block.items.map((item, idx) => (
+                          {block.items.map((item: string, idx: number) => (
                             <li key={idx} className="text-gray-700">
                               {item}
                             </li>

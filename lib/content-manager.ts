@@ -6,7 +6,7 @@
 
 export interface ContentBlock {
   type: "heading" | "paragraph" | "code" | "list" | "quote" | "video" | "image" | "table";
-  content: string;
+  content?: string;
   language?: string;
   items?: string[];
   url?: string;
@@ -140,6 +140,7 @@ function generateKidsContent(topic: string): ContentBlock[] {
     },
     {
       type: "list",
+      content: "",
       items: [
         `Understanding the basics of ${topic}`,
         "Fun activities and games",
@@ -322,7 +323,7 @@ export function formatContentForDisplay(
     const categoryStyle = contentTemplates[content.category];
     
     // Add category badge or styling if needed
-    if (categoryStyle.useEmojis && content.category === "kids") {
+    if ("useEmojis" in categoryStyle && categoryStyle.useEmojis && content.category === "kids") {
       // Kids content already has emojis
     }
   }

@@ -33,7 +33,7 @@ const features = [
   },
   {
     icon: Users,
-    title: "Host Workshops",
+    title: "Hosst Workshops",
     description: "Conduct live and recorded workshops with interactive sessions and Q&A.",
     color: "from-purple-500 to-pink-500",
   },

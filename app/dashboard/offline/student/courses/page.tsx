@@ -784,13 +784,16 @@ export default function OfflineCoursesPage() {
         {/* Content Viewer Modal */}
         {selectedContent && (
           <ContentViewer
-            isOpen={isContentViewerOpen}
-            onClose={() => {
-              setIsContentViewerOpen(false);
-              setSelectedContent(null);
+            open={isContentViewerOpen}
+            onOpenChange={(open) => {
+              setIsContentViewerOpen(open);
+              if (!open) {
+                setSelectedContent(null);
+              }
             }}
             content={selectedContent.content}
             title={selectedContent.title}
+            type={selectedContent.type || "content"}
           />
         )}
       </div>
