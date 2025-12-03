@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MapPin, Clock, Camera, CheckCircle2, AlertCircle, Shield, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -65,7 +65,7 @@ export function MarkAttendanceSheet({ isOpen, onClose, onSuccess }: MarkAttendan
     } else {
       resetForm();
     }
-  }, [isOpen]);
+  }, [isOpen, getLocation]);
 
   const resetForm = () => {
     setStep("qr");
@@ -102,7 +102,7 @@ export function MarkAttendanceSheet({ isOpen, onClose, onSuccess }: MarkAttendan
     }
   };
 
-  const getLocation = () => {
+  const getLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setLocationError("Geolocation is not supported by your browser");
       return;
@@ -153,7 +153,7 @@ export function MarkAttendanceSheet({ isOpen, onClose, onSuccess }: MarkAttendan
         maximumAge: 0,
       }
     );
-  };
+  }, []);
 
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
     const R = 6371e3; // Earth's radius in meters
@@ -514,6 +514,7 @@ export function MarkAttendanceSheet({ isOpen, onClose, onSuccess }: MarkAttendan
                   {photo ? (
                     <div className="space-y-4">
                       <div className="relative rounded-lg overflow-hidden border-2 border-green-200">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={photo} alt="Verification photo" className="w-full h-auto" />
                         <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2">
                           <CheckCircle2 className="h-4 w-4" />

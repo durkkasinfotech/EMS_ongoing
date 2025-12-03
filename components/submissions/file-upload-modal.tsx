@@ -50,7 +50,7 @@ export function FileUploadModal({
     return FileText;
   };
 
-  const validateFile = (file: File): string | null => {
+  const validateFile = useCallback((file: File): string | null => {
     // Check file size
     if (file.size > maxFileSize * 1024 * 1024) {
       return `File size exceeds ${maxFileSize}MB limit`;
@@ -63,7 +63,7 @@ export function FileUploadModal({
     }
 
     return null;
-  };
+  }, [maxFileSize, acceptedFileTypes]);
 
   const handleFiles = useCallback((fileList: FileList | null) => {
     if (!fileList) return;
@@ -102,7 +102,7 @@ export function FileUploadModal({
     if (newFiles.length > 0) {
       setFiles((prev) => [...prev, ...newFiles]);
     }
-  }, [files.length, maxFiles, maxFileSize, acceptedFileTypes, toast]);
+  }, [files.length, maxFiles, maxFileSize, acceptedFileTypes, toast, validateFile]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -326,6 +326,7 @@ export function FileUploadModal({
                       <div className="flex items-start gap-4">
                         {/* File Preview/Icon */}
                         {file.preview ? (
+                          /* eslint-disable-next-line @next/next/no-img-element */
                           <img
                             src={file.preview}
                             alt={file.name}

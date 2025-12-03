@@ -29,7 +29,7 @@ export function AssignmentsCard({ assignments }: AssignmentsCardProps) {
           <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
             <CheckCircle2 className="h-10 w-10 text-gray-600" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">You're all caught up! 🎉</h3>
+          <h3 className="text-lg font-semibold mb-2">You&apos;re all caught up! 🎉</h3>
           <p className="text-sm text-muted-foreground mb-4">
             No pending assignments at the moment
           </p>

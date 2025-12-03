@@ -612,8 +612,8 @@ const getWebDevelopmentContent = (subtopicId: string, courseStructure: any[]) =>
 // Helper to get subtopic by ID from course structure
 const getSubtopicById = (subtopicId: string, courseStructure: any[]) => {
   for (const level of courseStructure) {
-    for (const module of level.modules || []) {
-      const found = module.subtopics?.find((s: any) => s.id === subtopicId);
+    for (const courseModule of level.modules || []) {
+      const found = courseModule.subtopics?.find((s: any) => s.id === subtopicId);
       if (found) return found;
     }
   }
@@ -916,18 +916,18 @@ export default function CourseContentPage() {
                       </div>
                     </CardHeader>
                     <CardContent className="p-3 sm:p-4 md:p-6 space-y-3">
-                      {level.modules.map((module, moduleIndex) => {
-                        const isExpanded = expandedModule === module.id;
-                        const completedCount = module.subtopics?.filter((s) => s.completed).length || 0;
-                        const totalCount = module.subtopics?.length || 0;
+                      {level.modules.map((courseModule, moduleIndex) => {
+                        const isExpanded = expandedModule === courseModule.id;
+                        const completedCount = courseModule.subtopics?.filter((s) => s.completed).length || 0;
+                        const totalCount = courseModule.subtopics?.length || 0;
                         const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
-                        const nextLesson = module.subtopics?.find(s => !s.completed);
+                        const nextLesson = courseModule.subtopics?.find(s => !s.completed);
                         const nextLessonId = nextLesson?.id;
                         const isCompleted = totalCount > 0 && completedCount === totalCount;
                         
                         return (
                           <motion.div
-                            key={module.id}
+                            key={courseModule.id}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: moduleIndex * 0.05 }}
@@ -953,16 +953,16 @@ export default function CourseContentPage() {
                               </div>
 
                               <button
-                                onClick={() => toggleModule(module.id)}
+                                onClick={() => toggleModule(courseModule.id)}
                                 className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 p-4 sm:p-5 md:p-6 hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-transparent transition-all duration-200"
                               >
                                 <div className="flex items-start gap-3 sm:gap-4 md:gap-5 flex-1 min-w-0 w-full">
                                   {/* Thumbnail Image */}
                                   <div className="relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg sm:rounded-xl overflow-hidden border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-300 shadow-sm">
-                                    {module.thumbnail ? (
+                                    {courseModule.thumbnail ? (
                                       <Image
-                                        src={module.thumbnail}
-                                        alt={module.title}
+                                        src={courseModule.thumbnail}
+                                        alt={courseModule.title}
                                         fill
                                         sizes="(max-width: 640px) 80px, (max-width: 768px) 96px, 112px"
                                         className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -983,7 +983,7 @@ export default function CourseContentPage() {
                                       {isCompleted ? (
                                         <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                       ) : (
-                                        <span>{module.id}</span>
+                                        <span>{courseModule.id}</span>
                                       )}
                                     </div>
                                   </div>
@@ -999,7 +999,7 @@ export default function CourseContentPage() {
                                     {isCompleted ? (
                                       <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6" />
                                     ) : (
-                                      <span className="text-base sm:text-lg font-bold">{module.id}</span>
+                                      <span className="text-base sm:text-lg font-bold">{courseModule.id}</span>
                                     )}
                                   </div>
 
@@ -1008,12 +1008,12 @@ export default function CourseContentPage() {
                                     <div className="flex items-start justify-between gap-2 sm:gap-4">
                                       <div className="flex-1 min-w-0">
                                         <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 group-hover:text-blue-700 transition-colors leading-tight">
-                                          {module.title}
+                                          {courseModule.title}
                                         </h3>
                                         <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
                                           <div className="flex items-center gap-1 sm:gap-1.5">
                                             <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-                                            <span>{module.duration}</span>
+                                            <span>{courseModule.duration}</span>
                                           </div>
                                           <div className="flex items-center gap-1 sm:gap-1.5">
                                             <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -1063,7 +1063,7 @@ export default function CourseContentPage() {
                                       whileTap={{ scale: 0.98 }}
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        toggleModule(module.id);
+                                        toggleModule(courseModule.id);
                                       }}
                                     >
                                       <Play className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -1098,7 +1098,7 @@ export default function CourseContentPage() {
                                         Lessons ({totalCount})
                                       </h4>
                                     </div>
-                                    {module.subtopics.map((subtopic, idx) => (
+                                    {courseModule.subtopics.map((subtopic, idx) => (
                                       <motion.div
                                         key={subtopic.id}
                                         initial={{ opacity: 0, x: -10 }}
@@ -1243,7 +1243,7 @@ export default function CourseContentPage() {
           type={selectedContent.type}
           isCompleted={courseStructure
             .flatMap((level) => level.modules || [])
-            .flatMap((module) => module.subtopics || [])
+            .flatMap((courseModule) => courseModule.subtopics || [])
             .find((s) => s.id === selectedContent.subtopicId)?.completed || false}
           onComplete={() => handleMarkComplete(selectedContent.subtopicId)}
         />

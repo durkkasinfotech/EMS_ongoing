@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { X, Camera, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,9 +31,9 @@ export function QRScanner({ isOpen, onClose, onScanSuccess, onError }: QRScanner
     return () => {
       stopCamera();
     };
-  }, [isOpen]);
+  }, [isOpen, startCamera]);
 
-  const startCamera = async () => {
+  const startCamera = useCallback(async () => {
     try {
       setError(null);
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -61,7 +61,7 @@ export function QRScanner({ isOpen, onClose, onScanSuccess, onError }: QRScanner
       if (onError) onError(errorMsg);
       setPermissionGranted(false);
     }
-  };
+  }, [onError]);
 
   const stopCamera = () => {
     if (streamRef.current) {

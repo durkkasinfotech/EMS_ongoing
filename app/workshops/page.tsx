@@ -301,7 +301,7 @@ export default function WorkshopsPage() {
                 <div>
                   <h3 className="font-semibold mb-3 flex items-center gap-2">
                     <BookOpen className="h-5 w-5" />
-                    What You'll Learn
+                    What You&apos;ll Learn
                   </h3>
                   <ul className="space-y-2">
                     {selectedWorkshop.learnings.map((item, index) => (
