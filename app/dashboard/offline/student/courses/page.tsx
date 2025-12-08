@@ -287,82 +287,89 @@ export default function OfflineCoursesPage() {
     setExpandedContents(newExpanded);
   };
 
-  // Generate file-specific content for display
+  // Generate file-specific content for display with premium formatting
   const generateFileContent = (file: any, subtopic: any) => {
     // Generate unique content based on file name and type
     const fileName = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
     const fileType = file.type.toLowerCase();
+    const displayName = fileName.replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase());
     
-    let contentText = `# ${fileName}\n\n`;
+    let contentText = `# ${displayName}\n\n`;
     
     // Generate content based on file type and name
     if (fileType === "pdf") {
-      contentText += `## Document Overview\n\nThis PDF document contains comprehensive information about ${fileName.replace(/_/g, " ")}.\n\n`;
-      contentText += `### Key Topics Covered\n\n`;
-      contentText += `- Introduction to ${fileName.replace(/_/g, " ")}\n`;
-      contentText += `- Core concepts and principles\n`;
-      contentText += `- Practical examples and case studies\n`;
-      contentText += `- Best practices and guidelines\n`;
-      contentText += `- Implementation strategies\n\n`;
-      contentText += `### Document Details\n\n`;
+      contentText += `## 📚 Document Overview\n\nThis comprehensive PDF document provides detailed information and guidance on **${displayName}**. It's designed to help you master the concepts through structured learning and practical examples.\n\n`;
+      contentText += `### 🎯 Key Topics Covered\n\n`;
+      contentText += `- **Introduction & Fundamentals:** Understanding the basics of ${displayName}\n`;
+      contentText += `- **Core Concepts:** Essential principles and theories\n`;
+      contentText += `- **Practical Applications:** Real-world examples and case studies\n`;
+      contentText += `- **Best Practices:** Industry-standard guidelines and recommendations\n`;
+      contentText += `- **Advanced Strategies:** Implementation techniques and tips\n\n`;
+      contentText += `### 📋 Document Information\n\n`;
+      contentText += `- **File Name:** ${file.name}\n`;
       contentText += `- **File Size:** ${file.size}\n`;
       contentText += `- **Format:** PDF Document\n`;
-      contentText += `- **Category:** ${subtopic.title}\n\n`;
-      contentText += `### What You'll Learn\n\n`;
-      contentText += `This document provides in-depth coverage of ${fileName.replace(/_/g, " ")} concepts, including theoretical foundations and practical applications. The content is structured to help you understand the fundamentals and apply them in real-world scenarios.\n\n`;
-      contentText += `### How to Use This Document\n\n`;
-      contentText += `1. Read through the introduction and overview sections\n`;
-      contentText += `2. Study the core concepts chapter by chapter\n`;
-      contentText += `3. Review the examples and case studies\n`;
-      contentText += `4. Practice with the exercises provided\n`;
-      contentText += `5. Apply the concepts in your own projects\n`;
+      contentText += `- **Category:** ${subtopic.title}\n`;
+      contentText += `- **Module:** ${selectedModuleData?.title || "N/A"}\n\n`;
+      contentText += `### 💡 What You'll Learn\n\n`;
+      contentText += `This document offers in-depth coverage of ${displayName} concepts, combining theoretical foundations with practical applications. The content is carefully structured to guide you from basic understanding to advanced implementation, ensuring you can apply these concepts confidently in real-world scenarios.\n\n`;
+      contentText += `### 📖 How to Use This Document\n\n`;
+      contentText += `1. **Start with the Introduction:** Get familiar with the overview and objectives\n`;
+      contentText += `2. **Study Chapter by Chapter:** Follow the structured learning path\n`;
+      contentText += `3. **Review Examples:** Understand practical applications through case studies\n`;
+      contentText += `4. **Practice Exercises:** Complete the included exercises to reinforce learning\n`;
+      contentText += `5. **Apply Knowledge:** Use the concepts in your own projects and work\n`;
     } else if (fileType === "zip") {
-      contentText += `## Archive Contents\n\nThis ZIP archive contains multiple resources related to ${fileName.replace(/_/g, " ")}.\n\n`;
-      contentText += `### Archive Details\n\n`;
+      contentText += `## 📦 Archive Contents\n\nThis ZIP archive contains a comprehensive collection of resources for **${displayName}**. All materials are organized and ready for you to use.\n\n`;
+      contentText += `### 📊 Archive Information\n\n`;
+      contentText += `- **File Name:** ${file.name}\n`;
       contentText += `- **File Size:** ${file.size}\n`;
       contentText += `- **Format:** ZIP Archive\n`;
       contentText += `- **Category:** ${subtopic.title}\n\n`;
-      contentText += `### What's Inside\n\n`;
-      contentText += `This archive includes:\n\n`;
-      contentText += `- Templates and examples\n`;
-      contentText += `- Reference materials\n`;
-      contentText += `- Practice files and exercises\n`;
-      contentText += `- Additional resources and guides\n\n`;
-      contentText += `### How to Use\n\n`;
-      contentText += `1. Download the archive\n`;
-      contentText += `2. Extract all files to a folder\n`;
-      contentText += `3. Review the contents and structure\n`;
-      contentText += `4. Use the templates and examples as reference\n`;
-      contentText += `5. Practice with the provided exercises\n`;
+      contentText += `### 📁 What's Inside\n\n`;
+      contentText += `This archive includes valuable resources:\n\n`;
+      contentText += `- **Templates & Examples:** Ready-to-use templates for your projects\n`;
+      contentText += `- **Reference Materials:** Additional guides and documentation\n`;
+      contentText += `- **Practice Files:** Exercises and sample projects to work with\n`;
+      contentText += `- **Resources:** Supporting materials and tools\n\n`;
+      contentText += `### 🚀 How to Use\n\n`;
+      contentText += `1. **Download the Archive:** Save it to your preferred location\n`;
+      contentText += `2. **Extract Files:** Unzip all contents to a dedicated folder\n`;
+      contentText += `3. **Explore Structure:** Review the organization and file structure\n`;
+      contentText += `4. **Use Templates:** Start with the provided templates as a base\n`;
+      contentText += `5. **Practice & Learn:** Work through the exercises and examples\n`;
     } else if (fileType === "xlsx" || fileType === "xls") {
-      contentText += `## Spreadsheet Overview\n\nThis Excel file contains structured data and templates for ${fileName.replace(/_/g, " ")}.\n\n`;
-      contentText += `### File Details\n\n`;
+      contentText += `## 📊 Spreadsheet Overview\n\nThis Excel file contains structured data, templates, and calculations for **${displayName}**. It's designed to help you organize and analyze information effectively.\n\n`;
+      contentText += `### 📋 File Information\n\n`;
+      contentText += `- **File Name:** ${file.name}\n`;
       contentText += `- **File Size:** ${file.size}\n`;
       contentText += `- **Format:** Excel Spreadsheet\n`;
       contentText += `- **Category:** ${subtopic.title}\n\n`;
-      contentText += `### Contents\n\n`;
+      contentText += `### 📑 Contents\n\n`;
       contentText += `This spreadsheet includes:\n\n`;
-      contentText += `- Data tables and worksheets\n`;
-      contentText += `- Formulas and calculations\n`;
-      contentText += `- Templates for your use\n`;
-      contentText += `- Examples and sample data\n\n`;
-      contentText += `### How to Use\n\n`;
-      contentText += `1. Open the file in Excel or Google Sheets\n`;
-      contentText += `2. Review the structure and data\n`;
-      contentText += `3. Use the templates for your own work\n`;
-      contentText += `4. Modify and customize as needed\n`;
+      contentText += `- **Data Tables:** Organized worksheets with structured data\n`;
+      contentText += `- **Formulas & Functions:** Pre-configured calculations and formulas\n`;
+      contentText += `- **Templates:** Ready-to-use templates for your own work\n`;
+      contentText += `- **Sample Data:** Examples demonstrating best practices\n\n`;
+      contentText += `### 💼 How to Use\n\n`;
+      contentText += `1. **Open in Excel/Sheets:** Use Microsoft Excel or Google Sheets\n`;
+      contentText += `2. **Review Structure:** Explore the worksheets and data organization\n`;
+      contentText += `3. **Use Templates:** Copy templates for your own projects\n`;
+      contentText += `4. **Customize:** Modify and adapt to your specific needs\n`;
+      contentText += `5. **Learn from Examples:** Study the formulas and data structure\n`;
     } else {
-      contentText += `## File Overview\n\nThis file contains resources for ${fileName.replace(/_/g, " ")}.\n\n`;
-      contentText += `### File Details\n\n`;
+      contentText += `## 📄 File Overview\n\nThis file contains valuable resources for **${displayName}**, part of the ${subtopic.title} practice materials.\n\n`;
+      contentText += `### 📋 File Details\n\n`;
+      contentText += `- **File Name:** ${file.name}\n`;
       contentText += `- **File Size:** ${file.size}\n`;
       contentText += `- **Format:** ${file.type.toUpperCase()}\n`;
       contentText += `- **Category:** ${subtopic.title}\n\n`;
-      contentText += `### Description\n\n`;
-      contentText += `This file is part of the ${subtopic.title} practice materials. Download it to access the complete content and resources.\n`;
+      contentText += `### 📚 Description\n\n`;
+      contentText += `This file is an essential part of the ${subtopic.title} learning materials. Download it to access the complete content, resources, and practice materials that will help you master the concepts.\n`;
     }
     
     const previewDoc: ParsedDocument = {
-      title: fileName,
+      title: displayName,
       content: contentText,
       metadata: {
         type: fileType,
@@ -766,21 +773,23 @@ export default function OfflineCoursesPage() {
                                       />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <div className="flex items-center gap-2 mb-1">
-                                        <h3 className="text-lg font-bold text-gray-900 line-clamp-1">
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <h3 className="text-lg md:text-xl font-bold text-gray-900 line-clamp-2 tracking-tight">
                                           {subtopic.title}
                                         </h3>
                                         {isDownloaded && (
-                                          <CheckCircle2 className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                                          <div className="flex-shrink-0 p-1 bg-green-100 rounded-full">
+                                            <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                          </div>
                                         )}
                                       </div>
-                                      <div className="flex items-center gap-3 text-sm text-gray-500">
-                                        <span className="flex items-center gap-1">
+                                      <div className="flex items-center gap-3 text-sm font-medium text-gray-600">
+                                        <span className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-700 rounded-md">
                                           <Package className="h-4 w-4" />
-                                          {subtopic.files.length} files
+                                          <span className="font-semibold">{subtopic.files.length} files</span>
                                         </span>
-                                        <span>•</span>
-                                        <span>{module.title}</span>
+                                        <span className="text-gray-400">•</span>
+                                        <span className="text-gray-700 font-semibold">{module.title}</span>
                                       </div>
                                     </div>
                                   </div>
@@ -792,16 +801,18 @@ export default function OfflineCoursesPage() {
                                         e.stopPropagation();
                                         handleDownload(subtopic.files[0], subtopic);
                                       }}
-                                      className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                                      className="border-2 border-blue-600 bg-blue-600 text-white hover:bg-blue-700 hover:border-blue-700 font-semibold shadow-md"
                                     >
                                       <Download className="h-4 w-4 mr-2" />
-                                      Download
+                                      Download All
                                     </Button>
-                                    {isExpanded ? (
-                                      <ChevronDown className="h-5 w-5 text-gray-400" />
-                                    ) : (
-                                      <ChevronRight className="h-5 w-5 text-gray-400" />
-                                    )}
+                                    <div className={`p-1.5 rounded-lg transition-colors ${isExpanded ? "bg-blue-100" : "bg-gray-100"}`}>
+                                      {isExpanded ? (
+                                        <ChevronDown className="h-5 w-5 text-blue-600" />
+                                      ) : (
+                                        <ChevronRight className="h-5 w-5 text-gray-500" />
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
                               </button>
@@ -819,9 +830,14 @@ export default function OfflineCoursesPage() {
                                     <div className="p-5 space-y-5 bg-gradient-to-br from-gray-50 to-white">
                                       {/* Files List */}
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                                          <Package className="h-4 w-4 text-blue-600" />
-                                          Available Files
+                                        <h4 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2 tracking-tight">
+                                          <div className="p-1.5 bg-blue-600 rounded-lg">
+                                            <Package className="h-4 w-4 text-white" />
+                                          </div>
+                                          <span>Available Files</span>
+                                          <span className="ml-auto text-sm font-semibold text-blue-600 bg-blue-100 px-2.5 py-1 rounded-full">
+                                            {subtopic.files.length}
+                                          </span>
                                         </h4>
                                         <div className="space-y-2">
                                           {subtopic.files.map((file: any, index: number) => {
@@ -840,26 +856,31 @@ export default function OfflineCoursesPage() {
                                                 initial={{ opacity: 0, x: -10 }}
                                                 animate={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: index * 0.05 }}
-                                                className="bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-all overflow-hidden"
+                                                className="bg-white rounded-xl border-2 border-gray-200 hover:border-blue-400 hover:shadow-md transition-all overflow-hidden shadow-sm"
                                               >
                                                 {/* File Header */}
-                                                <div className="flex items-center justify-between gap-3 p-3">
+                                                <div className="flex items-center justify-between gap-3 p-4">
                                                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                                                    <div className="p-1.5 bg-gray-100 rounded flex-shrink-0">
-                                                      <FileIcon className="h-4 w-4 text-gray-600" />
+                                                    <div className="p-2.5 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex-shrink-0 shadow-sm">
+                                                      <FileIcon className="h-5 w-5 text-blue-700" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                      <div className="font-medium text-sm text-gray-900 truncate">
+                                                      <div className="font-bold text-base text-gray-900 truncate mb-1">
                                                         {file.name}
                                                       </div>
-                                                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                                                        <span>{file.type.toUpperCase()}</span>
-                                                        <span>•</span>
-                                                        <span>{file.size}</span>
+                                                      <div className="flex items-center gap-2 text-xs font-medium text-gray-600">
+                                                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md font-semibold">
+                                                          {file.type.toUpperCase()}
+                                                        </span>
+                                                        <span className="text-gray-400">•</span>
+                                                        <span className="font-semibold">{file.size}</span>
                                                         {fileDownloaded && (
                                                           <>
-                                                            <span>•</span>
-                                                            <CheckCircle2 className="h-3 w-3 text-blue-600" />
+                                                            <span className="text-gray-400">•</span>
+                                                            <div className="flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-md">
+                                                              <CheckCircle2 className="h-3 w-3" />
+                                                              <span className="font-semibold text-xs">Downloaded</span>
+                                                            </div>
                                                           </>
                                                         )}
                                                       </div>
@@ -873,9 +894,9 @@ export default function OfflineCoursesPage() {
                                                         e.stopPropagation();
                                                         toggleFileContent(fileId);
                                                       }}
-                                                      className="border-blue-300 text-blue-700 hover:bg-blue-50 text-xs"
+                                                      className="border-2 border-blue-400 text-blue-700 hover:bg-blue-50 hover:border-blue-500 font-semibold text-sm px-4 py-2 shadow-sm transition-all"
                                                     >
-                                                      <Eye className="h-3 w-3 mr-1" />
+                                                      <Eye className="h-4 w-4 mr-1.5" />
                                                       View
                                                     </Button>
                                                     <Button
@@ -885,9 +906,9 @@ export default function OfflineCoursesPage() {
                                                         e.stopPropagation();
                                                         handleDownload(file, subtopic);
                                                       }}
-                                                      className="border-blue-300 text-blue-700 hover:bg-blue-50 text-xs"
+                                                      className="border-2 border-blue-600 bg-blue-600 text-white hover:bg-blue-700 hover:border-blue-700 font-semibold text-sm px-4 py-2 shadow-md transition-all"
                                                     >
-                                                      <Download className="h-3 w-3 mr-1" />
+                                                      <Download className="h-4 w-4 mr-1.5" />
                                                       Download
                                                     </Button>
                                                   </div>
@@ -901,34 +922,39 @@ export default function OfflineCoursesPage() {
                                                       animate={{ height: "auto", opacity: 1 }}
                                                       exit={{ height: 0, opacity: 0 }}
                                                       transition={{ duration: 0.3, ease: "easeInOut" }}
-                                                      className="overflow-hidden border-t border-gray-200"
+                                                      className="overflow-hidden border-t-2 border-blue-100"
                                                     >
-                                                      <div className="p-4 bg-gradient-to-br from-blue-50 to-white">
-                                                        <div className="prose prose-sm max-w-none">
+                                                      <div className="p-6 bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+                                                        <div className="max-w-none space-y-5">
                                                           {fileContent.map((block: any, blockIndex: number) => (
                                                             <motion.div
                                                               key={blockIndex}
-                                                              initial={{ opacity: 0, y: 5 }}
+                                                              initial={{ opacity: 0, y: 10 }}
                                                               animate={{ opacity: 1, y: 0 }}
-                                                              transition={{ delay: blockIndex * 0.05 }}
-                                                              className="mb-3 last:mb-0"
+                                                              transition={{ delay: blockIndex * 0.08, duration: 0.3 }}
+                                                              className="mb-5 last:mb-0"
                                                             >
                                                               {block.type === "heading" && (
-                                                                <h3 className="text-base font-bold text-gray-900 mb-2">
+                                                                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 tracking-tight leading-tight border-b-2 border-blue-200 pb-2">
                                                                   {block.content}
                                                                 </h3>
                                                               )}
                                                               {block.type === "paragraph" && (
-                                                                <p className="text-gray-700 leading-relaxed text-sm mb-2">
+                                                                <p className="text-gray-800 leading-relaxed text-base mb-4 font-normal">
                                                                   {block.content}
                                                                 </p>
                                                               )}
                                                               {block.type === "list" && block.items && (
-                                                                <ul className="list-disc list-inside space-y-1 text-gray-700 ml-2 text-sm">
-                                                                  {block.items.map((item: string, idx: number) => (
-                                                                    <li key={idx}>{item}</li>
-                                                                  ))}
-                                                                </ul>
+                                                                <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                                                                  <ul className="space-y-2.5">
+                                                                    {block.items.map((item: string, idx: number) => (
+                                                                      <li key={idx} className="flex items-start gap-3 text-gray-800 text-base leading-relaxed">
+                                                                        <div className="mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-blue-600"></div>
+                                                                        <span className="flex-1 font-medium">{item}</span>
+                                                                      </li>
+                                                                    ))}
+                                                                  </ul>
+                                                                </div>
                                                               )}
                                                             </motion.div>
                                                           ))}
