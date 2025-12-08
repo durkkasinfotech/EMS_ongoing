@@ -151,6 +151,7 @@ export default function OfflineCoursesPage() {
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
   const [selectedSubtopic, setSelectedSubtopic] = useState<string | null>(null);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+  const [expandedContents, setExpandedContents] = useState<Set<string>>(new Set()); // Track expanded content sections
   const [downloadedContent, setDownloadedContent] = useState(getDownloadedContent());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -264,7 +265,25 @@ export default function OfflineCoursesPage() {
 
   const handleSubtopicSelect = (subtopicId: string) => {
     setSelectedSubtopic(subtopicId);
+    // Toggle content expansion
+    const newExpanded = new Set(expandedContents);
+    if (newExpanded.has(subtopicId)) {
+      newExpanded.delete(subtopicId);
+    } else {
+      newExpanded.add(subtopicId);
+    }
+    setExpandedContents(newExpanded);
     setSidebarOpen(false); // Close sidebar on mobile after selection
+  };
+
+  const toggleContentExpansion = (subtopicId: string) => {
+    const newExpanded = new Set(expandedContents);
+    if (newExpanded.has(subtopicId)) {
+      newExpanded.delete(subtopicId);
+    } else {
+      newExpanded.add(subtopicId);
+    }
+    setExpandedContents(newExpanded);
   };
 
   // Generate content for display
@@ -629,157 +648,214 @@ export default function OfflineCoursesPage() {
                     </div>
               </motion.div>
 
-              {/* Main Content Area */}
+              {/* Main Content Area - Expandable Dropdowns */}
               <div className="flex-1 min-w-0">
-                {selectedSubtopicData ? (
-                  <motion.div
-                    key={selectedSubtopic}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="space-y-6"
-                  >
-                    {/* Content Header */}
-                    <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <FileText className="h-5 w-5" />
-                              <h2 className="text-2xl font-bold">{selectedSubtopicData.title}</h2>
-                            </div>
-                            <p className="text-blue-100">
-                              Practice material for {selectedModuleData?.title}
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                {selectedCourseData ? (
+                  <div className="space-y-4">
+                    {selectedCourseData.modules.map((module) => (
+                      <div key={module.id} className="space-y-3">
+                        {module.subtopics.map((subtopic) => {
+                          const isExpanded = expandedContents.has(subtopic.id);
+                          const isDownloaded = downloadedContent.some(
+                            (d: any) => d.subtopicId === subtopic.id
+                          );
+                          const content = generateContent(subtopic);
 
-                    {/* Files Section */}
-                    <Card className="border-0 shadow-lg">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Package className="h-5 w-5 text-blue-600" />
-                          Available Files ({selectedSubtopicData.files.length})
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          {selectedSubtopicData.files.map((file: any, index: number) => {
-                            const FileIcon = getFileIcon(file.type);
-                            const fileDownloaded = downloadedContent.some(
-                              (d: any) =>
-                                d.subtopicId === selectedSubtopicData.id && d.fileName === file.name
-                            );
-
-                            return (
-                              <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 transition-all overflow-hidden"
+                          return (
+                            <motion.div
+                              key={subtopic.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="bg-white rounded-xl border-2 border-gray-200 shadow-md hover:shadow-lg transition-all overflow-hidden"
+                            >
+                              {/* Dropdown Header - Always Visible */}
+                              <button
+                                onClick={() => toggleContentExpansion(subtopic.id)}
+                                className="w-full text-left p-5 hover:bg-gray-50 transition-colors"
                               >
-                                <div className="flex items-center justify-between p-4">
-                                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                                    <div className="p-2 bg-white rounded-lg border border-gray-200 flex-shrink-0">
-                                      <FileIcon className="h-5 w-5 text-gray-600" />
+                                <div className="flex items-center justify-between gap-4">
+                                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                                    <div
+                                      className={`
+                                        p-2 rounded-lg flex-shrink-0
+                                        ${isExpanded ? "bg-blue-600" : "bg-gray-100"}
+                                      `}
+                                    >
+                                      <FileText
+                                        className={`h-5 w-5 ${isExpanded ? "text-white" : "text-gray-600"}`}
+                                      />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <div className="font-medium text-gray-900 mb-1 truncate">
-                                        {file.name}
-                                      </div>
-                                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                                        <span>{file.type.toUpperCase()}</span>
-                                        <span>•</span>
-                                        <span>{file.size}</span>
-                                        {fileDownloaded && (
-                                          <>
-                                            <span>•</span>
-                                            <div className="flex items-center gap-1">
-                                              <CheckCircle2 className="h-4 w-4 text-blue-600" />
-                                              <span className="text-blue-600">Downloaded</span>
-                                            </div>
-                                          </>
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <h3 className="text-lg font-bold text-gray-900 line-clamp-1">
+                                          {subtopic.title}
+                                        </h3>
+                                        {isDownloaded && (
+                                          <CheckCircle2 className="h-5 w-5 text-blue-600 flex-shrink-0" />
                                         )}
+                                      </div>
+                                      <div className="flex items-center gap-3 text-sm text-gray-500">
+                                        <span className="flex items-center gap-1">
+                                          <Package className="h-4 w-4" />
+                                          {subtopic.files.length} files
+                                        </span>
+                                        <span>•</span>
+                                        <span>{module.title}</span>
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+                                  <div className="flex items-center gap-2 flex-shrink-0">
                                     <Button
                                       size="sm"
                                       variant="outline"
-                                      onClick={() => {
-                                        const content = generateContent(selectedSubtopicData);
-                                        // Open in new window or modal
-                                        toast({
-                                          title: "Viewing Content",
-                                          description: "Content preview opened",
-                                        });
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDownload(subtopic.files[0], subtopic);
                                       }}
-                                      className="border-blue-300 text-blue-700 hover:bg-blue-50"
-                                    >
-                                      <Eye className="h-4 w-4 mr-2" />
-                                      View
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={() => handleDownload(file, selectedSubtopicData)}
                                       className="border-blue-300 text-blue-700 hover:bg-blue-50"
                                     >
                                       <Download className="h-4 w-4 mr-2" />
                                       Download
                                     </Button>
+                                    {isExpanded ? (
+                                      <ChevronDown className="h-5 w-5 text-gray-400" />
+                                    ) : (
+                                      <ChevronRight className="h-5 w-5 text-gray-400" />
+                                    )}
                                   </div>
                                 </div>
-                              </motion.div>
-                            );
-                          })}
-                        </div>
-                      </CardContent>
-                    </Card>
+                              </button>
 
-                    {/* Content Preview */}
-                    <Card className="border-0 shadow-lg">
-                      <CardHeader>
-                        <CardTitle>Content Preview</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="prose prose-sm max-w-none">
-                          {generateContent(selectedSubtopicData).map((block: any, index: number) => (
-                            <div key={index} className="mb-4">
-                              {block.type === "heading" && (
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                  {block.content}
-                                </h3>
-                              )}
-                              {block.type === "paragraph" && (
-                                <p className="text-gray-700 leading-relaxed">{block.content}</p>
-                              )}
-                              {block.type === "list" && block.items && (
-                                <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
-                                  {block.items.map((item: string, idx: number) => (
-                                    <li key={idx}>{item}</li>
-                                  ))}
-                                </ul>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
+                              {/* Expandable Content - Dropdown */}
+                              <AnimatePresence>
+                                {isExpanded && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                                    className="overflow-hidden border-t border-gray-200"
+                                  >
+                                    <div className="p-5 space-y-5 bg-gradient-to-br from-gray-50 to-white">
+                                      {/* Files List */}
+                                      <div>
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                          <Package className="h-4 w-4 text-blue-600" />
+                                          Available Files
+                                        </h4>
+                                        <div className="space-y-2">
+                                          {subtopic.files.map((file: any, index: number) => {
+                                            const FileIcon = getFileIcon(file.type);
+                                            const fileDownloaded = downloadedContent.some(
+                                              (d: any) =>
+                                                d.subtopicId === subtopic.id && d.fileName === file.name
+                                            );
+
+                                            return (
+                                              <motion.div
+                                                key={index}
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: index * 0.05 }}
+                                                className="bg-white rounded-lg border border-gray-200 p-3 hover:border-blue-300 transition-all"
+                                              >
+                                                <div className="flex items-center justify-between gap-3">
+                                                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                    <div className="p-1.5 bg-gray-100 rounded flex-shrink-0">
+                                                      <FileIcon className="h-4 w-4 text-gray-600" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                      <div className="font-medium text-sm text-gray-900 truncate">
+                                                        {file.name}
+                                                      </div>
+                                                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                                                        <span>{file.type.toUpperCase()}</span>
+                                                        <span>•</span>
+                                                        <span>{file.size}</span>
+                                                        {fileDownloaded && (
+                                                          <>
+                                                            <span>•</span>
+                                                            <CheckCircle2 className="h-3 w-3 text-blue-600" />
+                                                          </>
+                                                        )}
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <div className="flex items-center gap-2 flex-shrink-0">
+                                                    <Button
+                                                      size="sm"
+                                                      variant="outline"
+                                                      onClick={() => handleDownload(file, subtopic)}
+                                                      className="border-blue-300 text-blue-700 hover:bg-blue-50 text-xs"
+                                                    >
+                                                      <Download className="h-3 w-3 mr-1" />
+                                                      Download
+                                                    </Button>
+                                                  </div>
+                                                </div>
+                                              </motion.div>
+                                            );
+                                          })}
+                                        </div>
+                                      </div>
+
+                                      {/* Content Preview */}
+                                      <div>
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                          <FileText className="h-4 w-4 text-blue-600" />
+                                          Content Preview
+                                        </h4>
+                                        <div className="bg-white rounded-lg border border-gray-200 p-4">
+                                          <div className="prose prose-sm max-w-none">
+                                            {content.map((block: any, index: number) => (
+                                              <motion.div
+                                                key={index}
+                                                initial={{ opacity: 0, y: 5 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: index * 0.05 }}
+                                                className="mb-3 last:mb-0"
+                                              >
+                                                {block.type === "heading" && (
+                                                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                                                    {block.content}
+                                                  </h3>
+                                                )}
+                                                {block.type === "paragraph" && (
+                                                  <p className="text-gray-700 leading-relaxed text-sm">
+                                                    {block.content}
+                                                  </p>
+                                                )}
+                                                {block.type === "list" && block.items && (
+                                                  <ul className="list-disc list-inside space-y-1 text-gray-700 ml-2 text-sm">
+                                                    {block.items.map((item: string, idx: number) => (
+                                                      <li key={idx}>{item}</li>
+                                                    ))}
+                                                  </ul>
+                                                )}
+                                              </motion.div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <Card className="border-0 shadow-lg">
                     <CardContent className="p-12 text-center">
                       <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                       <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                        Select a Module
+                        Select a Course
                       </h3>
                       <p className="text-gray-600">
-                        Choose a module from the sidebar to view its content and materials
+                        Choose a course from the list to view its modules and materials
                       </p>
                     </CardContent>
                   </Card>
