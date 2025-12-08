@@ -152,6 +152,7 @@ export default function OfflineCoursesPage() {
   const [selectedSubtopic, setSelectedSubtopic] = useState<string | null>(null);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   const [expandedContents, setExpandedContents] = useState<Set<string>>(new Set()); // Track expanded content sections
+  const [expandedFiles, setExpandedFiles] = useState<Set<string>>(new Set()); // Track expanded file content
   const [downloadedContent, setDownloadedContent] = useState(getDownloadedContent());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -286,21 +287,101 @@ export default function OfflineCoursesPage() {
     setExpandedContents(newExpanded);
   };
 
-  // Generate content for display
-  const generateContent = (subtopic: any) => {
-    const previewText = `# ${subtopic.title}\n\nThis is comprehensive practice material for ${subtopic.title}.\n\n## Overview\n\n${subtopic.title} contains practice exercises and materials to help you master the concepts. Download the files to access the complete content.\n\n## Available Resources\n\n${subtopic.files.map((f: any) => `- **${f.name}** (${f.size})`).join('\n')}\n\n## Learning Objectives\n\n- Understand the core concepts\n- Practice with real-world examples\n- Apply knowledge through exercises\n- Master the techniques\n\n## Next Steps\n\n1. Download the materials\n2. Review the content\n3. Practice with the exercises\n4. Apply what you've learned`;
+  // Generate file-specific content for display
+  const generateFileContent = (file: any, subtopic: any) => {
+    // Generate unique content based on file name and type
+    const fileName = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
+    const fileType = file.type.toLowerCase();
+    
+    let contentText = `# ${fileName}\n\n`;
+    
+    // Generate content based on file type and name
+    if (fileType === "pdf") {
+      contentText += `## Document Overview\n\nThis PDF document contains comprehensive information about ${fileName.replace(/_/g, " ")}.\n\n`;
+      contentText += `### Key Topics Covered\n\n`;
+      contentText += `- Introduction to ${fileName.replace(/_/g, " ")}\n`;
+      contentText += `- Core concepts and principles\n`;
+      contentText += `- Practical examples and case studies\n`;
+      contentText += `- Best practices and guidelines\n`;
+      contentText += `- Implementation strategies\n\n`;
+      contentText += `### Document Details\n\n`;
+      contentText += `- **File Size:** ${file.size}\n`;
+      contentText += `- **Format:** PDF Document\n`;
+      contentText += `- **Category:** ${subtopic.title}\n\n`;
+      contentText += `### What You'll Learn\n\n`;
+      contentText += `This document provides in-depth coverage of ${fileName.replace(/_/g, " ")} concepts, including theoretical foundations and practical applications. The content is structured to help you understand the fundamentals and apply them in real-world scenarios.\n\n`;
+      contentText += `### How to Use This Document\n\n`;
+      contentText += `1. Read through the introduction and overview sections\n`;
+      contentText += `2. Study the core concepts chapter by chapter\n`;
+      contentText += `3. Review the examples and case studies\n`;
+      contentText += `4. Practice with the exercises provided\n`;
+      contentText += `5. Apply the concepts in your own projects\n`;
+    } else if (fileType === "zip") {
+      contentText += `## Archive Contents\n\nThis ZIP archive contains multiple resources related to ${fileName.replace(/_/g, " ")}.\n\n`;
+      contentText += `### Archive Details\n\n`;
+      contentText += `- **File Size:** ${file.size}\n`;
+      contentText += `- **Format:** ZIP Archive\n`;
+      contentText += `- **Category:** ${subtopic.title}\n\n`;
+      contentText += `### What's Inside\n\n`;
+      contentText += `This archive includes:\n\n`;
+      contentText += `- Templates and examples\n`;
+      contentText += `- Reference materials\n`;
+      contentText += `- Practice files and exercises\n`;
+      contentText += `- Additional resources and guides\n\n`;
+      contentText += `### How to Use\n\n`;
+      contentText += `1. Download the archive\n`;
+      contentText += `2. Extract all files to a folder\n`;
+      contentText += `3. Review the contents and structure\n`;
+      contentText += `4. Use the templates and examples as reference\n`;
+      contentText += `5. Practice with the provided exercises\n`;
+    } else if (fileType === "xlsx" || fileType === "xls") {
+      contentText += `## Spreadsheet Overview\n\nThis Excel file contains structured data and templates for ${fileName.replace(/_/g, " ")}.\n\n`;
+      contentText += `### File Details\n\n`;
+      contentText += `- **File Size:** ${file.size}\n`;
+      contentText += `- **Format:** Excel Spreadsheet\n`;
+      contentText += `- **Category:** ${subtopic.title}\n\n`;
+      contentText += `### Contents\n\n`;
+      contentText += `This spreadsheet includes:\n\n`;
+      contentText += `- Data tables and worksheets\n`;
+      contentText += `- Formulas and calculations\n`;
+      contentText += `- Templates for your use\n`;
+      contentText += `- Examples and sample data\n\n`;
+      contentText += `### How to Use\n\n`;
+      contentText += `1. Open the file in Excel or Google Sheets\n`;
+      contentText += `2. Review the structure and data\n`;
+      contentText += `3. Use the templates for your own work\n`;
+      contentText += `4. Modify and customize as needed\n`;
+    } else {
+      contentText += `## File Overview\n\nThis file contains resources for ${fileName.replace(/_/g, " ")}.\n\n`;
+      contentText += `### File Details\n\n`;
+      contentText += `- **File Size:** ${file.size}\n`;
+      contentText += `- **Format:** ${file.type.toUpperCase()}\n`;
+      contentText += `- **Category:** ${subtopic.title}\n\n`;
+      contentText += `### Description\n\n`;
+      contentText += `This file is part of the ${subtopic.title} practice materials. Download it to access the complete content and resources.\n`;
+    }
     
     const previewDoc: ParsedDocument = {
-      title: subtopic.title,
-      content: previewText,
+      title: fileName,
+      content: contentText,
       metadata: {
-        type: "text",
-        size: previewText.length,
+        type: fileType,
+        size: contentText.length,
         uploadedAt: new Date().toISOString(),
       },
       sections: [],
     };
     return formatDocumentForDisplay(previewDoc);
+  };
+
+  const toggleFileContent = (fileId: string) => {
+    const newExpanded = new Set(expandedFiles);
+    if (newExpanded.has(fileId)) {
+      newExpanded.delete(fileId);
+    } else {
+      newExpanded.add(fileId);
+    }
+    setExpandedFiles(newExpanded);
   };
 
   return (
@@ -659,7 +740,6 @@ export default function OfflineCoursesPage() {
                           const isDownloaded = downloadedContent.some(
                             (d: any) => d.subtopicId === subtopic.id
                           );
-                          const content = generateContent(subtopic);
 
                           return (
                             <motion.div
@@ -750,6 +830,9 @@ export default function OfflineCoursesPage() {
                                               (d: any) =>
                                                 d.subtopicId === subtopic.id && d.fileName === file.name
                                             );
+                                            const fileId = `${subtopic.id}_${file.name}`;
+                                            const isFileExpanded = expandedFiles.has(fileId);
+                                            const fileContent = generateFileContent(file, subtopic);
 
                                             return (
                                               <motion.div
@@ -757,9 +840,10 @@ export default function OfflineCoursesPage() {
                                                 initial={{ opacity: 0, x: -10 }}
                                                 animate={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: index * 0.05 }}
-                                                className="bg-white rounded-lg border border-gray-200 p-3 hover:border-blue-300 transition-all"
+                                                className="bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-all overflow-hidden"
                                               >
-                                                <div className="flex items-center justify-between gap-3">
+                                                {/* File Header */}
+                                                <div className="flex items-center justify-between gap-3 p-3">
                                                   <div className="flex items-center gap-3 flex-1 min-w-0">
                                                     <div className="p-1.5 bg-gray-100 rounded flex-shrink-0">
                                                       <FileIcon className="h-4 w-4 text-gray-600" />
@@ -785,7 +869,22 @@ export default function OfflineCoursesPage() {
                                                     <Button
                                                       size="sm"
                                                       variant="outline"
-                                                      onClick={() => handleDownload(file, subtopic)}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        toggleFileContent(fileId);
+                                                      }}
+                                                      className="border-blue-300 text-blue-700 hover:bg-blue-50 text-xs"
+                                                    >
+                                                      <Eye className="h-3 w-3 mr-1" />
+                                                      View
+                                                    </Button>
+                                                    <Button
+                                                      size="sm"
+                                                      variant="outline"
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDownload(file, subtopic);
+                                                      }}
                                                       className="border-blue-300 text-blue-700 hover:bg-blue-50 text-xs"
                                                     >
                                                       <Download className="h-3 w-3 mr-1" />
@@ -793,50 +892,57 @@ export default function OfflineCoursesPage() {
                                                     </Button>
                                                   </div>
                                                 </div>
+
+                                                {/* Expandable File Content Dropdown */}
+                                                <AnimatePresence>
+                                                  {isFileExpanded && (
+                                                    <motion.div
+                                                      initial={{ height: 0, opacity: 0 }}
+                                                      animate={{ height: "auto", opacity: 1 }}
+                                                      exit={{ height: 0, opacity: 0 }}
+                                                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                                                      className="overflow-hidden border-t border-gray-200"
+                                                    >
+                                                      <div className="p-4 bg-gradient-to-br from-blue-50 to-white">
+                                                        <div className="prose prose-sm max-w-none">
+                                                          {fileContent.map((block: any, blockIndex: number) => (
+                                                            <motion.div
+                                                              key={blockIndex}
+                                                              initial={{ opacity: 0, y: 5 }}
+                                                              animate={{ opacity: 1, y: 0 }}
+                                                              transition={{ delay: blockIndex * 0.05 }}
+                                                              className="mb-3 last:mb-0"
+                                                            >
+                                                              {block.type === "heading" && (
+                                                                <h3 className="text-base font-bold text-gray-900 mb-2">
+                                                                  {block.content}
+                                                                </h3>
+                                                              )}
+                                                              {block.type === "paragraph" && (
+                                                                <p className="text-gray-700 leading-relaxed text-sm mb-2">
+                                                                  {block.content}
+                                                                </p>
+                                                              )}
+                                                              {block.type === "list" && block.items && (
+                                                                <ul className="list-disc list-inside space-y-1 text-gray-700 ml-2 text-sm">
+                                                                  {block.items.map((item: string, idx: number) => (
+                                                                    <li key={idx}>{item}</li>
+                                                                  ))}
+                                                                </ul>
+                                                              )}
+                                                            </motion.div>
+                                                          ))}
+                                                        </div>
+                                                      </div>
+                                                    </motion.div>
+                                                  )}
+                                                </AnimatePresence>
                                               </motion.div>
                                             );
                                           })}
                                         </div>
                                       </div>
 
-                                      {/* Content Preview */}
-                                      <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                                          <FileText className="h-4 w-4 text-blue-600" />
-                                          Content Preview
-                                        </h4>
-                                        <div className="bg-white rounded-lg border border-gray-200 p-4">
-                                          <div className="prose prose-sm max-w-none">
-                                            {content.map((block: any, index: number) => (
-                                              <motion.div
-                                                key={index}
-                                                initial={{ opacity: 0, y: 5 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: index * 0.05 }}
-                                                className="mb-3 last:mb-0"
-                                              >
-                                                {block.type === "heading" && (
-                                                  <h3 className="text-lg font-bold text-gray-900 mb-2">
-                                                    {block.content}
-                                                  </h3>
-                                                )}
-                                                {block.type === "paragraph" && (
-                                                  <p className="text-gray-700 leading-relaxed text-sm">
-                                                    {block.content}
-                                                  </p>
-                                                )}
-                                                {block.type === "list" && block.items && (
-                                                  <ul className="list-disc list-inside space-y-1 text-gray-700 ml-2 text-sm">
-                                                    {block.items.map((item: string, idx: number) => (
-                                                      <li key={idx}>{item}</li>
-                                                    ))}
-                                                  </ul>
-                                                )}
-                                              </motion.div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      </div>
                                     </div>
                                   </motion.div>
                                 )}
